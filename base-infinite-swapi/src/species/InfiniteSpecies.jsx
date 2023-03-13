@@ -34,11 +34,14 @@ export function InfiniteSpecies() {
       <InfiniteScroll loadMore={fetchNextPage} hasMore={hasNextPage}>
         {data.pages.map((pageData) => {
           return pageData.results.map((species) => {
-            <Species
-              name={species.name}
-              language={species.language}
-              averageLifespan={species.averageLifespan}
-            />;
+            return (
+              <Species
+                key={species.name}
+                name={species.name}
+                language={species.language}
+                averageLifespan={species.averageLifespan}
+              />
+            );
           });
         })}
       </InfiniteScroll>
