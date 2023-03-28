@@ -1,4 +1,3 @@
-import { queryClient } from './../../../../../../completed-apps/lazy-days-spa/client/src/react-query/queryClient';
 import { AxiosResponse } from 'axios';
 import { useQuery, useQueryClient } from 'react-query';
 

@@ -1,4 +1,4 @@
-import { createStandaloneToast, ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, createStandaloneToast } from '@chakra-ui/react';
 import { QueryClient } from 'react-query';
 
 import { theme } from '../theme';
