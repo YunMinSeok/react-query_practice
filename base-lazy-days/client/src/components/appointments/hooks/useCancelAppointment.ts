@@ -2,7 +2,7 @@ import { Appointment } from '../../../../../shared/types';
 import { axiosInstance } from '../../../axiosInstance';
 import { queryKeys } from '../../../react-query/constants';
 import { useCustomToast } from '../../app/hooks/useCustomToast';
-import { useMutation, useQueryClient } from 'react-query';
+import { UseMutateFunction, useMutation, useQueryClient } from 'react-query';
 
 // for when server call is needed
 async function removeAppointmentUser(appointment: Appointment): Promise<void> {
@@ -13,23 +13,25 @@ async function removeAppointmentUser(appointment: Appointment): Promise<void> {
 }
 
 // TODO: update return type
-export function useCancelAppointment(): (appointment: Appointment) => void {
+export function useCancelAppointment(): UseMutateFunction<
+  void,
+  unknown,
+  Appointment,
+  unknown
+> {
   const toast = useCustomToast();
 
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation(
-    (appointment: Appointment) => removeAppointmentUser(appointment),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries([queryKeys.appointments]),
-          toast({
-            title: 'You have remove the appointment!',
-            status: 'success',
-          });
-      },
+  const { mutate } = useMutation(removeAppointmentUser, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([queryKeys.appointments]),
+        toast({
+          title: 'You have canceled the appointment!',
+          status: 'warning',
+        });
     },
-  );
+  });
 
   return mutate;
 }
