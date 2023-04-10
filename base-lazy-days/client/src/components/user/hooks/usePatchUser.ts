@@ -42,15 +42,29 @@ export function usePatchUser(): UseMutateFunction<
     {
       onMutate: async (newData: User | null) => {
         queryClient.cancelQueries(queryKeys.user);
+        const previousUserData: User = queryClient.getQueryData(queryKeys.user);
+        updateUser(newData);
+
+        return { previousUserData };
       },
-      onError: (previousUserDataContext) => {},
+      onError: (error, newData, context) => {
+        if (context.previousUserData) {
+          updateUser(context.previousUserData);
+          toast({
+            title: 'Update faild; restoring previous values',
+            status: 'warning',
+          });
+        }
+      },
       onSuccess: (userData: User | null) => {
         if (user) {
           updateUser(userData);
           toast({ title: 'User updated!', status: 'success' });
         }
       },
-      onSettled: () => {},
+      onSettled: () => {
+        queryClient.invalidateQueries(queryKeys.user);
+      },
     },
   );
 
