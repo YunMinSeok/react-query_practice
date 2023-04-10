@@ -1,10 +1,11 @@
 import jsonpatch from 'fast-json-patch';
-import { useMutation, UseMutateFunction } from 'react-query';
+import { useMutation, UseMutateFunction, useQueryClient } from 'react-query';
 
 import type { User } from '../../../../../shared/types';
 import { axiosInstance, getJWTHeader } from '../../../axiosInstance';
 import { useUser } from './useUser';
 import { useCustomToast } from '../../app/hooks/useCustomToast';
+import { queryKeys } from 'react-query/constants';
 
 // for when we need a server function
 async function patchUserOnServer(
@@ -34,16 +35,22 @@ export function usePatchUser(): UseMutateFunction<
 > {
   const { user, updateUser } = useUser();
   const toast = useCustomToast();
+  const queryClient = useQueryClient();
 
   const { mutate: patchUser } = useMutation(
     (newUserData: User) => patchUserOnServer(newUserData, user),
     {
+      onMutate: async (newData: User | null) => {
+        queryClient.cancelQueries(queryKeys.user);
+      },
+      onError: (previousUserDataContext) => {},
       onSuccess: (userData: User | null) => {
         if (user) {
           updateUser(userData);
           toast({ title: 'User updated!', status: 'success' });
         }
       },
+      onSettled: () => {},
     },
   );
 
